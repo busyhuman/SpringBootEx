@@ -1,3 +1,3 @@
 # SpringBootEx
 
-아샬 강사님의 Eatgo Application 
+아샬 강사님의 Eatgo Application 공부
