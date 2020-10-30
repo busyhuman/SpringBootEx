@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import sun.security.util.Password;
 
-import javax.swing.text.html.Option;
 import javax.transaction.Transactional;
 import java.util.Optional;
 
@@ -16,10 +16,16 @@ import java.util.Optional;
 public class UserService {
     UserRepository userRepostory;
 
+    PasswordEncoder passwordEncoder;
+
+
     @Autowired
-    public UserService(UserRepository userRepostory) {
+    public UserService(UserRepository userRepostory, PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
         this.userRepostory = userRepostory;
     }
+
+
 
     public User registerUser(String email, String name, String password) {
         Optional<User> existed = userRepostory.findByEmail(email);
@@ -28,7 +34,6 @@ public class UserService {
             throw new EmailExistedException(email);
         }
 
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
         String encodedPassword = passwordEncoder.encode(password);
 
         User user = User.builder()
@@ -42,6 +47,14 @@ public class UserService {
     }
 
     public User authenticate(String email, String password) {
-        return null;
+        // 람다를 써야 아무때나 만들지 않게 해줄 수 있다.
+        User user = userRepostory.findByEmail(email)
+                .orElseThrow(() -> new EmailNotExistedException(email));
+
+        if( !passwordEncoder.matches(password, user.getPassword())){
+            throw new PasswordWrongException();
+        }
+
+        return user;
     }
 }
