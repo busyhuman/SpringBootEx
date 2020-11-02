@@ -1,12 +1,27 @@
 package kr.co.fastcampus.eatgo.utils;
 
-import org.springframework.stereotype.Component;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
+import java.security.Key;
 
-@Component
 public class JwtUtil {
 
 
-    public String createToken(long l, String john) {
-        return "header.payload.signature";
+    private Key key;
+
+    public JwtUtil(String secret) {
+        this.key = Keys.hmacShaKeyFor(secret.getBytes());
+    }
+
+    public String createToken(long userId, String name) {
+
+        String token = Jwts.builder()
+                .claim("userId", userId)
+                .claim("name", name)
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+
+        return token;
     }
 }
