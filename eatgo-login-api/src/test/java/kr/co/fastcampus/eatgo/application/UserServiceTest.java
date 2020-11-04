@@ -11,8 +11,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.never;
@@ -36,30 +34,34 @@ public class UserServiceTest {
     }
 
     @Test
-    public void registerUser() {
-        String email = "tester@example.com";
-        String name = "Tester";
+    public void authenticateWithNotExistedEmail() {
+        String email = "x@example.com";
         String password = "test";
 
-        userService.registerUser(email, name, password);
+        given(userRepository.findByEmail(email)).willReturn(Optional.empty());
 
-        verify(userRepository).save(any());
+
+        assertThatThrownBy(() -> {
+            userService.authenticate(email, password);
+        }).isInstanceOf(EmailNotExistedException.class);
     }
 
     @Test
-    public void registerUserWithExistedEmail() {
+    public void authenticateWithWrongPassword() {
         String email = "tester@example.com";
-        String name = "Tester";
-        String password = "test";
+        String password = "x";
 
-        User user = User.builder().build();
-        given(userRepository.findByEmail(email)).willReturn(Optional.of(user));
+        User mockUser = User.builder().build();
+
+        // given은 Mock객체의 동작을 미리 정의한다. (답정너)
+        given(userRepository.findByEmail(email)).willReturn(Optional.of(mockUser));
+
+        given(passwordEncoder.matches(any(), any())).willReturn(false);
+
 
         assertThatThrownBy(() -> {
-            userService.registerUser(email, name, password);
-        }).isInstanceOf(EmailExistedException.class);
+            userService.authenticate(email, password);
+        }).isInstanceOf(PasswordWrongException.class);
 
-        verify(userRepository, never()).save(any());
     }
-
 }
