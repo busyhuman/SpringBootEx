@@ -9,7 +9,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import static org.hamcrest.core.StringContains.containsString;
-import static org.junit.jupiter.api.Assertions.*;
 
 public class JwtUtilTest {
     private static final String SECRET = "12345678901234567890123456789012";
@@ -25,7 +24,7 @@ public class JwtUtilTest {
     public void createToken() {
         JwtUtil jwtUtil = new JwtUtil(SECRET);
 
-        String token = jwtUtil.createToken(1004L, "John");
+        String token = jwtUtil.createToken(1004L, "John", null);
 
         assertThat(token, containsString("."));
 
