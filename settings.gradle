@@ -6,4 +6,5 @@ include 'eatgo-customer-api'
 include 'eatgo-customer-api'
 include 'eatgo-costomer-api'
 include 'eatgo-login-api'
+include 'eatgo-restaurant-api'
 

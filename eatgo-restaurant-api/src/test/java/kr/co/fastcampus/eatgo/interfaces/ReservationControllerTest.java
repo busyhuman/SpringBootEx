@@ -27,28 +27,14 @@ public class ReservationControllerTest {
     private ReservationService reservationService;
 
     @Test
-    public void create() throws Exception {
+    public void list() throws Exception {
         String token = "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjEwMDQsIm5hbWUiOiJKb2huIn0.8hm6ZOJykSINHxL-rf0yV882fApL3hyQ9-WGlJUyo2A";
 
-        Reservation mockReservation = Reservation.builder().id(12L).build();
-
-        given(reservationService.addReservation(any(), any(), any(), any(), any(), any()))
-                .willReturn(mockReservation);
-
-        mvc.perform(post("/restaurants/369/reservations")
+        mvc.perform(get("/reservations")
                 .header("Authorization","Bearer " + token)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"date\":\"2019-12-24\",\"time\":\"20:00\",\"partySize\":20}")
-        ).andExpect(status().isCreated());
+        ).andExpect(status().isOk());
 
-        Long userId = 1004L;
-        String name = "John";
-        String date = "2019-12-24";
-        String time = "20:00";
-        Integer partySize = 20;
-
-        verify(reservationService).addReservation(
-                eq(369L), eq(userId), eq(name), eq(date), eq(time), eq(partySize));
+        verify(reservationService).getReservations(1004L);
     }
 
 }
